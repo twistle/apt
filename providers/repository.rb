@@ -26,12 +26,10 @@ end
 # install apt key from keyserver
 def install_key_from_keyserver(key, keyserver, key_proxy)
   execute "install-key #{key}" do
-    if keyserver.start_with?('hkp://')
-      command "apt-key adv --keyserver #{keyserver} --recv #{key}"
-    elsif key_proxy.empty?
-      command "apt-key adv --keyserver hkp://#{keyserver}:80 --recv #{key}"
-    else
+    if !key_proxy.empty?
       command "apt-key adv --keyserver-options http-proxy=#{key_proxy} --keyserver hkp://#{keyserver}:80 --recv #{key}"
+    else
+      command "apt-key adv --keyserver #{keyserver} --recv #{key}"
     end
     action :run
     not_if do
